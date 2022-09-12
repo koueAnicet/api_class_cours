@@ -18,3 +18,8 @@ Rendez les Views plus génériques avec un ModelViewset
     Le paramètre basename  permet de retrouver l’URL complète avec la fonction redirect, comme le propose Django. Cela sera utile lors de l’écriture des tests que nous aborderons ensuite.
 
     Un ModelViewset  est comparable à une super vue Django qui regroupe à la fois CreateView, UpdateView, DeleteView, ListView  et DetailView.
+
+Filtrez les résultats d’un endpoint
+    Appliquez un filtre sur les données retournées
+    Utilisez un filtre transmis dans l’URL
+        http://127.0.0.1:8000/api/product/?category_id=1
