@@ -34,6 +34,7 @@ class TestCategory(ShopAPITestCase):
                 'name': category.name,
                 'date_created': self.format_datetime(category.date_created),
                 'date_updated': self.format_datetime(category.date_updated),
+                
             } for category in [self.category, self.category_2]
         ]
        

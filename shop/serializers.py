@@ -1,3 +1,4 @@
+from dataclasses import field
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 
@@ -14,9 +15,17 @@ class ProductSerializer(ModelSerializer):
         queryset = instance.articles.filter(active=True)
         serializer = ArticleSerializer(queryset, many=True)
         return serializer.data
+  
+    
+class CategoryListSerializer(ModelSerializer):
+    
+    class Meta:
+        model= Category
+        fields= ['id', 'date_created', 'date_updated', 'name',]
 
-
-class CategorySerialiser(serializers.ModelSerializer):
+    
+    
+class CategoryDetailSerialiser(serializers.ModelSerializer):
     # Nous redéfinissons l'attribut 'product' qui porte 
     # le même nom que dans la liste des champs à afficher
     # en lui précisant un serializer paramétré à 'many=True' 
