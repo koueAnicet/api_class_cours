@@ -9,7 +9,7 @@ class ShopAPITestCase(APITestCase):
     @classmethod
     def setUpTestData(cls):
         cls.category = Category.objects.create(name='Fruits', active=True)
-        Category.objects.create(name='Légumes', active=True)
+        Category.objects.create(name='Légume', active=True)
 
         cls.product = cls.category.products.create(name='Ananas', active=True)
         cls.category.products.create(name='Banane', active=False)
@@ -37,7 +37,7 @@ class TestCategory(ShopAPITestCase):
             } for category in [self.category, self.category_2]
         ]
        
-        self.assertEqual(expected, response.json())
+        self.assertEqual(response.json(), expected)
 
     def test_create(self):
         category_count = Category.objects.count()
