@@ -5,17 +5,33 @@ from rest_framework import serializers
 from shop.models import Article, Category, Product
 
 
-class ProductSerializer(ModelSerializer):
-    articles = serializers.SerializerMethodField()
+
+class ProductListSerializer(serializers.ModelSerializer):
+
     class Meta:
-        model= Product
+         model = Product
+         fields = ['id', 'date_created', 'date_updated', 'name', 'category']
+         
+    # def get_articles(self, instance):
+    #     queryset = instance.articles.filter(active=True)
+    #     serializer = ArticleSerializer(queryset, many=True)
+    #     return serializer.data
+    
+    
+class ProductDetailSerializer(serializers.ModelSerializer):
+    
+    articles = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Product
         fields = ['id', 'date_created', 'date_updated', 'name', 'category', 'articles']
 
     def get_articles(self, instance):
         queryset = instance.articles.filter(active=True)
         serializer = ArticleSerializer(queryset, many=True)
         return serializer.data
-  
+
+    
     
 class CategoryListSerializer(serializers.ModelSerializer):
     
@@ -36,7 +52,6 @@ class CategoryDetailSerialiser(serializers.ModelSerializer):
     # nommée 'get_XXX' où XXX est le nom de l'attribut, ici 'products'
     products = serializers.SerializerMethodField()
 
-    
     class Meta:
         model = Category
         fields = ['id', 'date_created', 'date_updated', 'name', 'products']
@@ -49,7 +64,7 @@ class CategoryDetailSerialiser(serializers.ModelSerializer):
         # On applique le filtre sur notre queryset pour n'avoir que les produits actifs
         queryset = instance.products.filter(active=True)
         # Le serializer est créé avec le queryset défini et toujours défini en tant que many=True
-        serializer = ProductSerializer(queryset, many=True)
+        serializer = ProductListSerializer(queryset, many=True)
         # la propriété '.data' est le rendu de notre serializer que nous retournons ici
         return serializer.data    
         

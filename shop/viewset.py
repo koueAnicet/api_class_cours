@@ -1,10 +1,26 @@
+from rest_framework.response import Response
+from rest_framework.decorators import action
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from shop.models import Article, Category, Product
-from shop.serializers import CategoryDetailSerialiser,CategoryListSerializer, ProductSerializer, ArticleSerializer
+from shop.serializers import CategoryDetailSerialiser,CategoryListSerializer, ArticleSerializer,ProductDetailSerializer,ProductListSerializer
+
+class MultipleSerializerMixin:
+    # Un mixin est une classe qui ne fonctionne pas de façon autonome
+    # Elle permet d'ajouter des fonctionnalités aux classes qui les étendent
+    detail_serializer_class = None
+
+    def get_serializer_class(self):
+        # Notre mixin détermine quel serializer à utiliser
+        # même si elle ne sait pas ce que c'est ni comment l'utiliser
+        if self.action == 'retrieve' and self.detail_serializer_class is not None:
+             # Si l'action demandée est le détail alors nous retournons le serializer de détail
+            return self.detail_serializer_class
+        return super().get_serializer_class()
 
 
-class CategoryViewset(ReadOnlyModelViewSet):
+
+class CategoryViewset(MultipleSerializerMixin,ReadOnlyModelViewSet):
     
     serializer_class=CategoryListSerializer
     detail_serializer_class=CategoryDetailSerialiser
@@ -12,6 +28,13 @@ class CategoryViewset(ReadOnlyModelViewSet):
     def get_queryset(self):
         return Category.objects.filter(active=True)
 
+    
+    @action(detail=True, methods=['post'])
+    def disable(self, request, pk):
+        # Nous pouvons maintenant simplement appeler la méthode disable
+        self.get_object().disable()
+        return Response()
+    
     def get_serializer_class(self):
         #si l'action  est detail:retrieve
         if self.action == 'retrieve':
@@ -20,9 +43,11 @@ class CategoryViewset(ReadOnlyModelViewSet):
         return super().get_serializer_class()
     
 
-class ProductViewset(ReadOnlyModelViewSet):
+class ProductViewset(MultipleSerializerMixin,ReadOnlyModelViewSet):
     
-    serializer_class = ProductSerializer
+    serializer_class = ProductListSerializer
+    detail_serializer_class = ProductDetailSerializer
+
     
     def get_queryset(self):
         # Nous récupérons tous les produits dans une variable nommée queryset
@@ -34,6 +59,10 @@ class ProductViewset(ReadOnlyModelViewSet):
         
         return queryset
 
+    @action(detail=True, methods=['post'])
+    def disable(self, request, pk):
+        self.get_object().disable()
+        return Response()
 
 class ArticleViewset(ReadOnlyModelViewSet):
     serializer_class = ArticleSerializer
