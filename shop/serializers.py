@@ -17,7 +17,7 @@ class ProductSerializer(ModelSerializer):
         return serializer.data
   
     
-class CategoryListSerializer(ModelSerializer):
+class CategoryListSerializer(serializers.ModelSerializer):
     
     class Meta:
         model= Category

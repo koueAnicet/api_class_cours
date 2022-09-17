@@ -42,3 +42,13 @@ Imbriquer des serializers permet d’obtenir plus d’informations en un seul ap
 Il est possible d’appliquer des filtres sur un attribut du serializer en utilisant un SerializerMethodField.
 Toute modification d’un endpoint entraîne l’adaptation d’un test.
 Il est bien de rapidement mettre en place une pagination sur une API.
+
+#------------Améliorez le rendu du détail d’un endpoint-------#
+Lorsqu’une requête entre dans notre API, les viewsets définissent un attribut action  qui correspond à l’action que l’application client est en train de réaliser. Elle peut être :
+
+    list : appel en GET  sur l’URL de liste ;
+    retrieve : appel en GET  sur l’URL de détail (qui comporte alors un identifiant) ;
+    create : appel en POST  sur l’URL de liste ;
+    update : appel en PUT  sur l’URL de détail ;
+    partial_update : appel en PATCH  sur l’URL de détail ;
+    destroy : appel en DELETE  sur l’URL de détail.
