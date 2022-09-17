@@ -79,3 +79,41 @@ Pour se faire
         Pour notre boutique, nous souhaitons optimiser le référencement et avoir un rappel du nom de la catégorie également présent dans la description. Nous pouvons effectuer automatiquement ce contrôle au travers d’une validation multiple.
 
         La validation entre champs se fait au travers de la méthode validate. Vérifions que le nom est bien présent dans la description :
+
+
+#-----------Cloisonnez vos tests-------#
+
+il existe un cas compliqué à tester, lorsque nous sommes consommateurs d’une API.
+
+    Lors de l’exécution des tests, nous ne souhaitons pas que les appels soient réalisés. Cela pourrait créer des données incohérentes sur le système cible, ou empêcher simplement certains tests si, par exemple, la création de doublons de noms n’est pas permise (comme nous l’avons mis en place dans la partie précédente !). Et imaginez que l’API tierce soit payante, alors chaque exécution d’un test serait alors facturée.
+
+    Pour pallier cela, il existe ce qu’on appelle des mocks.
+
+    Un mock se base sur le principe du Monkey Patching, c'est-à-dire modifier une section de code pour une durée limitée, sans toucher à sa version originale. Dans le cas d’un mock, cela veut dire que lors de l'exécution du test qui réalise l’appel, nous allons Monkey Patcher l’appel réseau, et simuler une réponse qui correspond à notre cas de test.
+
+    Comme un exemple vaut mille mots, voyons cela tout de suite !
+
+Appelez une API externe
+
+    Donnons aux consommateurs encore plus de détails sur nos produits grâce à Open Food Facts, une base de données sur les produits alimentaires. Nous allons extraire l’écoscore de cet appel et le retourner dans notre endpoint de détail d’un produit.
+
+    Mettons en place un appel à l’API d’Open Food Facts sur un produit spécifique. L’appel sera réalisé sur l’URL
+
+    https://world.openfoodfacts.org/api/v0/product/3229820787015.json
+
+    Réalisons cet appel et retournons les données dans un nouvel attribut nommé ecoscore. Nous verrons ensuite comment résoudre la problématique de l’appel tiers dans nos tests.
+
+    Commençons par ajouter requests  à nos dépendances pour réaliser l’appel.
+
+    Modifions notre serializer de liste de produits pour qu’il retourne l’écoscore.
+
+    Les propriétés de model peuvent être ajoutées directement dans la liste des 
+    champs des serializers, ils sont alors considérés comme en lecture seule.
+
+    Mocker les appels API externes est tout aussi important que de tester sa propre API. Cela permet de tester les différents comportements que peuvent avoir les API partenaires. N’hésitez pas à tester des erreurs comme des 500 ou des Timeouts, un problème de réseau ou de SI Partenaire ne doit jamais mettre en péril votre propre SI.
+    
+En résumé
+Une API peut très bien faire des appels à d’autres API.
+Lors d’un appel à une API externe, il faut prévoir que cette API puisse ne pas répondre, afin d’éviter que notre API ne fonctionne plus.
+Lors d’un appel à une API externe, il faut mettre en place un mock pour pouvoir tester dans tous les cas d’usage, même sans connexion Internet.
+Dans cette partie, nous avons rendu nos endpoints plus performants et avons mis notre API à l’épreuve de tests grâce aux mocks. Avant de sécuriser notre API avec l’authentification, validez vos acquis de cette partie dans le quiz ! Je vous attends dans la partie 3 !

@@ -1,4 +1,5 @@
 from django.db import models, transaction
+import requests
 
 
 class Category(models.Model):
@@ -22,6 +23,7 @@ class Category(models.Model):
         self.active = False
         self.save()
         self.products.update(active=False)
+        
     
 
 class Product(models.Model):
@@ -45,6 +47,20 @@ class Product(models.Model):
         self.save()
         self.articles.update(active=False)
 
+    #import d'api externe de Food Open Fact
+    def call_external_api(self, method, url):
+        # l'appel doit être le plus petit possible car appliquer un mock va réduire la couverture de tests
+        # C'est cette méthode qui va être monkey patchée
+        return requests.request(method, url)
+ 
+    @property
+    def ecoscore(self):
+        # Nous réalisons l'appel à open food fact
+        response = self.call_external_api('GET', 'https://world.openfoodfacts.org/api/v0/product/3229820787015.json')
+        if response.status_code == 200:
+        # et ne renvoyons l'écoscore que si la réponse est valide
+            return response.json()['product']['ecoscore_grade']
+        
 
 class Article(models.Model):
 
