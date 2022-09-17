@@ -52,3 +52,30 @@ Lorsqu’une requête entre dans notre API, les viewsets définissent un attribu
     update : appel en PUT  sur l’URL de détail ;
     partial_update : appel en PATCH  sur l’URL de détail ;
     destroy : appel en DELETE  sur l’URL de détail.
+
+#--------Validez les données----#
+ Nous allons très vite en mettre un second en place, qui sera dédié aux administrateurs qui, eux, auront la possibilité de créer, modifier et supprimer des données.
+
+DRF nous permet de réaliser ces deux types de contrôles au travers de la réécriture de méthodes sur le serializer :
+
+    validate_XXX  où XXX est le nom du champ à valider ;
+    validate  qui permet un contrôle global sur tous les champs du serializer.
+Pour se faire
+    -Validez les données d’un champ
+    Dans les endpoints d’administration :
+
+        Des serializers différents sont utilisés et les données retournées diffèrent ;
+        Certains accès peuvent également être limités à certaines personnes authentifiées. 
+
+        nouvel endpoint en le déclarant auprès de notre routeur.
+    Maintenant que nous utilisons un Viewset, la création de catégorie est possible. C’est à la création que sert ce formulaire en nous permettant d'effectuer des actions POST. Les actions de mise à jour et de suppression sont disponibles sur les URL de détail des catégories.
+
+    Validons à présent nos données, sans oublier que la création d’un doublon de catégorie ne doit pas être permis. Il nous faut pour cela modifier notre serializer de liste, car c’est lui qui est utilisé pour l’action create 
+
+    La validation d’un champ unique se fait en écrivant la méthode validate_XXX  où XXX  est le nom du champ. Dans notre cas, validate_name:
+
+    -Mettez en place une validation multiple
+    
+        Pour notre boutique, nous souhaitons optimiser le référencement et avoir un rappel du nom de la catégorie également présent dans la description. Nous pouvons effectuer automatiquement ce contrôle au travers d’une validation multiple.
+
+        La validation entre champs se fait au travers de la méthode validate. Vérifions que le nom est bien présent dans la description :

@@ -13,7 +13,7 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
-
+    
     @transaction.atomic
     def disable(self):
         if self.active is False:

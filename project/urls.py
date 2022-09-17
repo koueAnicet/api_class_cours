@@ -1,8 +1,9 @@
+
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
 
-from shop.viewset import CategoryViewset ,ProductViewset, ArticleViewset
+from shop.viewset import AdminCategoryViewset,AdminArticleViewset, AdminProductViewset, CategoryViewset ,ProductViewset, ArticleViewset
 
 ## Ici nous créons notre routeur
 router = routers.SimpleRouter()
@@ -11,6 +12,10 @@ router = routers.SimpleRouter()
 router.register('category', CategoryViewset, basename='category')
 router.register('product', ProductViewset, basename='product')
 router.register('article', ArticleViewset, basename='article')
+#admin
+router.register('admin/category', AdminCategoryViewset, basename='admin-category')
+router.register('admin/article', AdminArticleViewset, basename='admin-article')
+router.register('admin/product', AdminProductViewset, basename='admin-product')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

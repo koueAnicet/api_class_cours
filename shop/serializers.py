@@ -37,9 +37,24 @@ class CategoryListSerializer(serializers.ModelSerializer):
     
     class Meta:
         model= Category
-        fields= ['id', 'date_created', 'date_updated', 'name',]
+        fields= ['id', 'date_created', 'date_updated', 'name','description']
 
+    #methode permet les doublons lors de creation d'un category
+    def validate_name(self, value):
+        # Nous vérifions que la catégorie existe
+        if Category.objects.filter(name=value).exists():
+            # En cas d'erreur, DRF nous met à disposition l'exception ValidationError
+            raise serializers.ValidationError('Category already exists')
+        return value
     
+    #controle global de creation d'un category
+    def validate(self, data):
+        # Effectuons le contrôle sur la présence du nom dans la description
+        if data['name'] not in data['description']:
+        # Levons une ValidationError si ça n'est pas le cas
+            raise serializers.ValidationError('Name must be in description')
+        return data
+    #lors de creation d'un endpoind s'assurer de metre ls controls sur tous les champs
     
 class CategoryDetailSerialiser(serializers.ModelSerializer):
     # Nous redéfinissons l'attribut 'product' qui porte 
@@ -70,8 +85,20 @@ class CategoryDetailSerialiser(serializers.ModelSerializer):
         
     
     
-class ArticleSerializer(ModelSerializer):
+class ArticleSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Article
         fields = ['id', 'date_created', 'date_updated', 'name', 'price', 'product']
+        
+    #control sur le prix d'un article   
+    def validate_price(self, value):
+        if value < 1:
+            raise serializers.ValidationError('Price must be greater than 1')
+        return value
+    
+    #control sur le produit
+    def validate_product(self, value):
+        if value.active is False:
+            raise serializers.ValidationError('Inactive product')
+        return value

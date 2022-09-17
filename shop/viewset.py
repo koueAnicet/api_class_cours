@@ -1,6 +1,6 @@
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework.viewsets import ReadOnlyModelViewSet
+from rest_framework.viewsets import ReadOnlyModelViewSet,ModelViewSet
 
 from shop.models import Article, Category, Product
 from shop.serializers import CategoryDetailSerialiser,CategoryListSerializer, ArticleSerializer,ProductDetailSerializer,ProductListSerializer
@@ -18,6 +18,31 @@ class MultipleSerializerMixin:
             return self.detail_serializer_class
         return super().get_serializer_class()
 
+#endpoint d’administration
+class AdminCategoryViewset(MultipleSerializerMixin, ModelViewSet):
+     
+    serializer_class = CategoryListSerializer
+    detail_serializer_class = CategoryDetailSerialiser
+ 
+    def get_queryset(self):
+        return Category.objects.all()
+    
+    
+class AdminProductViewset(MultipleSerializerMixin, ModelViewSet):
+    
+    serializer_class=ProductListSerializer
+    detail_serializer_class=ProductDetailSerializer
+    
+    def get_queryset(self):
+        return Product.objects.all()
+    
+    
+class AdminArticleViewset(MultipleSerializerMixin, ModelViewSet):
+    
+    serializer_class=ArticleSerializer
+    #detail_serializer_class=ArticleDetailSerializer
+    queryset = Article.objects.all()
+        
 
 
 class CategoryViewset(MultipleSerializerMixin,ReadOnlyModelViewSet):
@@ -70,6 +95,7 @@ class ArticleViewset(ReadOnlyModelViewSet):
     def get_queryset(self):
         queryset =  Article.objects.filter(active=True)
         product_id = self.request.GET.get('product_id')
+        
         if product_id is not None:
             queryset = queryset.filter(product_id=product_id)
         return queryset
