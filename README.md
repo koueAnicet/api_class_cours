@@ -53,6 +53,20 @@ Lorsqu’une requête entre dans notre API, les viewsets définissent un attribu
     partial_update : appel en PATCH  sur l’URL de détail ;
     destroy : appel en DELETE  sur l’URL de détail.
 
+#------------les action----------#
+    Vous devez penser Action chaque fois qu’un besoin fait référence à une entité, mais que le verbe ne correspond pas à un élément du CRUD. Par exemple, dans « Nous souhaitons que nos visiteurs puissent liker des publications », l’entité est la publication et l’action est liker.
+
+    @Ainsi, la réalisation d’un POST sur l'endpointhttp://127.0.0.1:8000/api/category/2/disable/  aura pour effet de :
+
+    Désactiver la catégorie, ce qui ne rendra plus visible la catégorie sur l'endpointhttp://127.0.0.1:8000/api/category/.
+    Désactiver les produits de cette catégorie, ce qui ne rendra plus visible ces produits sur l'endpoint http://127.0.0.1:8000/api/product/.
+
+#------------- Resume sur actions --------#
+    Il est possible de créer d’autres actions en dehors de celles du CRUD.
+DRF met à disposition un décorateur action  qui permet de créer de nouvelles actions.
+Les actions peuvent être mises en place sur les URL de liste et de détail d’un endpoint.
+Les actions peuvent utiliser n’importe quelle méthode HTTP (GET, POST, PATCH, DELETE…).
+
 #--------Validez les données----#
  Nous allons très vite en mettre un second en place, qui sera dédié aux administrateurs qui, eux, auront la possibilité de créer, modifier et supprimer des données.
 
@@ -113,7 +127,7 @@ Appelez une API externe
     Mocker les appels API externes est tout aussi important que de tester sa propre API. Cela permet de tester les différents comportements que peuvent avoir les API partenaires. N’hésitez pas à tester des erreurs comme des 500 ou des Timeouts, un problème de réseau ou de SI Partenaire ne doit jamais mettre en péril votre propre SI.
     
 En résumé
-Une API peut très bien faire des appels à d’autres API.
-Lors d’un appel à une API externe, il faut prévoir que cette API puisse ne pas répondre, afin d’éviter que notre API ne fonctionne plus.
-Lors d’un appel à une API externe, il faut mettre en place un mock pour pouvoir tester dans tous les cas d’usage, même sans connexion Internet.
-Dans cette partie, nous avons rendu nos endpoints plus performants et avons mis notre API à l’épreuve de tests grâce aux mocks. Avant de sécuriser notre API avec l’authentification, validez vos acquis de cette partie dans le quiz ! Je vous attends dans la partie 3 !
+    Une API peut très bien faire des appels à d’autres API.
+    Lors d’un appel à une API externe, il faut prévoir que cette API puisse ne pas répondre, afin d’éviter que notre API ne fonctionne plus.
+    Lors d’un appel à une API externe, il faut mettre en place un mock pour pouvoir tester dans tous les cas d’usage, même sans connexion Internet.
+    Dans cette partie, nous avons rendu nos endpoints plus performants et avons mis notre API à l’épreuve de tests grâce aux mocks. Avant de sécuriser notre API avec l’authentification, validez vos acquis de cette partie dans le quiz ! Je vous attends dans la partie 3 !

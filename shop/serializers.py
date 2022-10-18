@@ -1,4 +1,5 @@
 from dataclasses import field
+from itertools import product
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 
@@ -28,7 +29,8 @@ class ProductDetailSerializer(serializers.ModelSerializer):
 
     def get_articles(self, instance):
         queryset = instance.articles.filter(active=True)
-        serializer = ArticleSerializer(queryset, many=True)
+        serializer = ArticleListSerializer(queryset, many=True)
+        
         return serializer.data
 
     
@@ -39,7 +41,7 @@ class CategoryListSerializer(serializers.ModelSerializer):
         model= Category
         fields= ['id', 'date_created', 'date_updated', 'name','description']
 
-    #methode permet les doublons lors de creation d'un category
+    #methode permet eviter les doublons lors de creation d'un category
     def validate_name(self, value):
         # Nous vérifions que la catégorie existe
         if Category.objects.filter(name=value).exists():
@@ -47,7 +49,7 @@ class CategoryListSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Category already exists')
         return value
     
-    #controle global de creation d'un category
+    #controle global de creation d'un category, ensemble des donnees de tpous serializer
     def validate(self, data):
         # Effectuons le contrôle sur la présence du nom dans la description
         if data['name'] not in data['description']:
@@ -55,6 +57,7 @@ class CategoryListSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Name must be in description')
         return data
     #lors de creation d'un endpoind s'assurer de metre ls controls sur tous les champs
+    #afin assurer la perenité du system information
     
 class CategoryDetailSerialiser(serializers.ModelSerializer):
     # Nous redéfinissons l'attribut 'product' qui porte 
@@ -70,7 +73,7 @@ class CategoryDetailSerialiser(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ['id', 'date_created', 'date_updated', 'name', 'products']
-        
+    #redefinition d'une methode  
     def get_products(self, instance):
         # Le paramètre 'instance' est l'instance de la catégorie consultée.
         # Dans le cas d'une liste, cette méthode est appelée autant de fois qu'il y a
@@ -78,27 +81,63 @@ class CategoryDetailSerialiser(serializers.ModelSerializer):
 
         # On applique le filtre sur notre queryset pour n'avoir que les produits actifs
         queryset = instance.products.filter(active=True)
-        # Le serializer est créé avec le queryset défini et toujours défini en tant que many=True
+        # Le serializer est créé avec le queryset défini et toujours 
+        # défini en tant que many=True
         serializer = ProductListSerializer(queryset, many=True)
         # la propriété '.data' est le rendu de notre serializer que nous retournons ici
         return serializer.data    
         
     
     
-class ArticleSerializer(serializers.ModelSerializer):
+class ArticleListSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Article
         fields = ['id', 'date_created', 'date_updated', 'name', 'price', 'product']
-        
-    #control sur le prix d'un article   
-    def validate_price(self, value):
-        if value < 1:
-            raise serializers.ValidationError('Price must be greater than 1')
+ 
+
+    def validate_name(self, value):
+        # Nous vérifions que l'article existe
+        if Article.objects.filter(name=value).exists():
+            # En cas d'erreur, DRF nous met à disposition l'exception ValidationError
+            raise serializers.ValidationError('Article name already exists')
         return value
     
-    #control sur le produit
-    def validate_product(self, value):
-        if value.active is False:
-            raise serializers.ValidationError('Inactive product')
+    #control sur le prix d'un article   
+    def validate_price(self, value):
+        if value <1:
+            raise serializers.ValidationError('Price doit plus grand que 1')
         return value
+    
+    def validate(self, data):
+        if data['name'] not in data['description']:
+            raise serializers.ValidationError('Name must be in description')
+        return data
+    
+    #control sur le produit
+    
+    
+    
+class ArticleDetailSerializer(serializers.ModelSerializer):
+    
+    product = ProductListSerializer()
+    
+    class Meta:
+        model = Article
+        fields = ['id', 'date_created', 'date_updated', 'name', 'description', 'price', 'product']
+    
+  
+        
+    #redefinition d'une methode
+    def get_product(self, instance):
+        queryset = instance.product.filter(active=True)
+        serializer = ProductListSerializer(queryset, many=True)
+        return serializer.data
+    
+   
+    
+    #control sur le produit
+    # def validate_product(self, value):
+    #     if value.active is False:
+    #         raise serializers.ValidationError('Inactive product')
+    #     return value

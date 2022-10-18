@@ -12,7 +12,7 @@ router = routers.SimpleRouter()
 router.register('category', CategoryViewset, basename='category')
 router.register('product', ProductViewset, basename='product')
 router.register('article', ArticleViewset, basename='article')
-#admin
+#admin router 
 router.register('admin/category', AdminCategoryViewset, basename='admin-category')
 router.register('admin/article', AdminArticleViewset, basename='admin-article')
 router.register('admin/product', AdminProductViewset, basename='admin-product')

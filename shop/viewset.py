@@ -1,9 +1,10 @@
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.viewsets import ReadOnlyModelViewSet,ModelViewSet
+from shop import serializers
 
 from shop.models import Article, Category, Product
-from shop.serializers import CategoryDetailSerialiser,CategoryListSerializer, ArticleSerializer,ProductDetailSerializer,ProductListSerializer
+from shop.serializers import CategoryDetailSerialiser,CategoryListSerializer, ArticleListSerializer,ArticleDetailSerializer,ProductDetailSerializer,ProductListSerializer
 
 class MultipleSerializerMixin:
     # Un mixin est une classe qui ne fonctionne pas de façon autonome
@@ -18,7 +19,7 @@ class MultipleSerializerMixin:
             return self.detail_serializer_class
         return super().get_serializer_class()
 
-#endpoint d’administration
+#---------endpoint d’administration------#
 class AdminCategoryViewset(MultipleSerializerMixin, ModelViewSet):
      
     serializer_class = CategoryListSerializer
@@ -39,11 +40,15 @@ class AdminProductViewset(MultipleSerializerMixin, ModelViewSet):
     
 class AdminArticleViewset(MultipleSerializerMixin, ModelViewSet):
     
-    serializer_class=ArticleSerializer
+    serializer_class=ArticleListSerializer
+    detail_serializer_class=ArticleDetailSerializer
+    
     #detail_serializer_class=ArticleDetailSerializer
-    queryset = Article.objects.all()
+    def get_queryset(self):
+        return Article.objects.all()
+           
         
-
+#---------------endpoind pour les utilisateur---------#
 
 class CategoryViewset(MultipleSerializerMixin,ReadOnlyModelViewSet):
     
@@ -56,7 +61,7 @@ class CategoryViewset(MultipleSerializerMixin,ReadOnlyModelViewSet):
     
     @action(detail=True, methods=['post'])
     def disable(self, request, pk):
-        # Nous pouvons maintenant simplement appeler la méthode disable
+        # Nous pouvons maintenant simplement appeler la méthode disable:deactiver
         self.get_object().disable()
         return Response()
     
@@ -77,29 +82,64 @@ class ProductViewset(MultipleSerializerMixin,ReadOnlyModelViewSet):
     def get_queryset(self):
         # Nous récupérons tous les produits dans une variable nommée queryset
         queryset = Product.objects.filter(active=True)
-        # Vérifions la présence du paramètre ‘category_id’ dans l’url et si oui alors appliquons notre filtre
+        # Vérifions la présence du paramètre ‘category_id’ dans l’url et si oui 
+        # alors appliquons notre filtre
         category_id = self.request.GET.get('category_id')
+        
         if category_id is not None:
             queryset = queryset.filter(category_id=category_id)
-        
         return queryset
 
     @action(detail=True, methods=['post'])
     def disable(self, request, pk):
+        """
+            Permet de desactive les detail d'une  category
+        """
         self.get_object().disable()
+        #si vouloir save un produit
+        
+        # stak = self.get_object().disable()
+        # serializer = serializers.Product(data= request.DATA, stak=stak)
+        # #on peut utiliser .is_valid() / validated_data(), saver dans bd avant d'appliquer laction
+        # if serializer.validated_data():
+        #     serializer.save()
         return Response()
+      
+    def get_serializer_class(self):
+        #si l'action  est detail:retrieve
+        if self.action == 'retrieve':
+            return self.detail_serializer_class
+        #par default return serializer_class
+        return super().get_serializer_class()
 
-class ArticleViewset(ReadOnlyModelViewSet):
-    serializer_class = ArticleSerializer
+class ArticleViewset(MultipleSerializerMixin, ReadOnlyModelViewSet):
+    
+    serializer_class = ArticleListSerializer
+    detail_serializer_class = ArticleDetailSerializer
+
     
     def get_queryset(self):
+        # Nous récupérons tous les produits dans une variable nommée queryset
         queryset =  Article.objects.filter(active=True)
+        # Vérifions la présence du paramètre ‘product_id’ dans l’url et si oui alors appliquons notre filtre
         product_id = self.request.GET.get('product_id')
         
         if product_id is not None:
             queryset = queryset.filter(product_id=product_id)
         return queryset
     
+    @action(detail=True, methods=['post'])
+    def disable(self, request, pk):
+        self.get_object().disable()
+        return Response()
+    
+      
+    def get_serializer_class(self):
+        #si l'action  est detail:retrieve
+        if self.action == 'retrieve':
+            return self.detail_serializer_class
+        #par default return serializer_class
+        return super().get_serializer_class()
        
 # class CategoryAPIView(APIView):
     
