@@ -1,6 +1,9 @@
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.viewsets import ReadOnlyModelViewSet,ModelViewSet
+#Pour les permission api: Limitez l’accès aux utilisateurs authentifiés
+from rest_framework.permissions import IsAuthenticated
+
 from shop import serializers
 
 from shop.models import Article, Category, Product
@@ -19,12 +22,17 @@ class MultipleSerializerMixin:
             return self.detail_serializer_class
         return super().get_serializer_class()
 
+
 #---------endpoint d’administration------#
+
+
 class AdminCategoryViewset(MultipleSerializerMixin, ModelViewSet):
      
     serializer_class = CategoryListSerializer
     detail_serializer_class = CategoryDetailSerialiser
- 
+    # Nous avons simplement à appliquer la permission sur le viewset
+    permission_classes = [IsAuthenticated]
+    
     def get_queryset(self):
         return Category.objects.all()
     
