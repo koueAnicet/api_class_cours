@@ -131,3 +131,53 @@ En résumé
     Lors d’un appel à une API externe, il faut prévoir que cette API puisse ne pas répondre, afin d’éviter que notre API ne fonctionne plus.
     Lors d’un appel à une API externe, il faut mettre en place un mock pour pouvoir tester dans tous les cas d’usage, même sans connexion Internet.
     Dans cette partie, nous avons rendu nos endpoints plus performants et avons mis notre API à l’épreuve de tests grâce aux mocks. Avant de sécuriser notre API avec l’authentification, validez vos acquis de cette partie dans le quiz ! Je vous attends dans la partie 3 !
+
+#------------------Ajoutez l’authentification des utilisateurs----------#
+
+Un JWT est constitué de 3 parties séparées par un point. Par exemple ce JWT : 
+ eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTYyODk0ODE0NSwianRpIjoiODBmZTA4MDkxM2UxNDBjYmEwMDU4YWY4YmM5NjllZjYiLCJ1c2VyX2lkIjoxfQ.l31cs5pTApiR9R9s8pZaeyHIJuTmjcs07fxSqSpj1fQ
+
+Chaque partie est encodée en base64, il est possible d’utiliser jwt.io pour les déchiffrer :
+
+@ Le header, qui est en général constitué de deux attributs, indique le type de token et l'algorithme de chiffrement utilisé.
+Une fois décodé :
+{
+    "typ": "JWT",
+    "alg": "HS256"
+}
+@ Le payload contient les informations utiles que nous souhaitons faire transiter entre le serveur et le client.
+Une fois décodé :
+ {
+    "token_type": "refresh",
+    "exp": 1628948145,
+    "jti": "80fe080913e140cba0058af8bc969ef6",
+    "user_id": 1
+}
+
+@ La signature est un élément de sécurité permettant de vérifier que les données n’ont pas été 
+modifiées entre les échanges client-serveur. La clé permettant la génération de cette signature 
+est stockée sur le serveur qui fournit le JWT (elle est basée sur la SECRET_KEY de Django).
+
+- La librairie Simple JWT va nous permettre d’authentifier nos utilisateurs et de leur fournir une paire de JWT :
+
+    Un access_token  qui va permettre de vérifier l’identité et les droits de l’utilisateur. Sa durée de 
+    vie est limitée dans le temps ;
+    Un refresh_token  qui va permettre d’obtenir une nouvelle paire de tokens une fois que l’ access_token  sera expiré.
+
+- Deux endpoints vont donc être mis à disposition par djangorestframework-simplejwt  :
+
+    Un endpoint d’authentification ;
+    Un endpoint de rafraîchissement de token.
+
+NB: 
+    Pour rappel, une classe d’authentification dans Django permet de définir 
+    l’utilisateur à l’origine de la requête. 
+    C’est elle qui attache le user  à la requête avec l’attribut request.user  
+    si l'utilisateur a prouvé son authentification.
+
+En résumé:
+    @ Les JWT permettent de transférer des informations du client au serveur en plus des jetons d’authentification.
+    @ djangorestframework-simplejwt  est une librairie permettant de gérer l’authentification,  
+      mais il en existe d’autres également conseillées par DRF.
+    @ Deux nouveaux endpoints d’obtention et de rafraîchissement de tokens fournis par Simple JWT  
+      permettent de gérer l’authentification de nos utilisateurs.

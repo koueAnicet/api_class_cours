@@ -2,6 +2,8 @@
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
+# JWT
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from shop.viewset import AdminCategoryViewset,AdminArticleViewset, AdminProductViewset, CategoryViewset ,ProductViewset, ArticleViewset
 
@@ -20,6 +22,8 @@ router.register('admin/product', AdminProductViewset, basename='admin-product')
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),#URL d’obtention de tokens
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),# et URL de rafraîchissement de tokens
     path('api/', include(router.urls)),# Il faut bien penser à ajouter les urls du router dans la liste des urls disponibles.
     
     # path('api/category/', CategoryAPIView.as_view()),
