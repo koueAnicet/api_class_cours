@@ -216,7 +216,7 @@ En résumé:
     Il faut pour cela réaliser un appel en POST sur l’endpoint de rafraîchissement de tokens. 
     Le token de rafraîchissement doit être transmis dans le corps de la requête sous l’attribut refresh, 
     et un nouveau token d’accès est alors retourné par le serveur.
-    
+
 En résumé:
 
     -  Les tokens JWT sont un moyen d’assurer l’authentification des utilisateurs.
@@ -224,3 +224,20 @@ En résumé:
       clientes pendant la session des utilisateurs.
     - Deux endpoints différents permettent d’une part l’obtention de tokens, 
       et d’autre part le rafraîchissement du token d’accès.    
+
+#--------Restreignez l'accès à certains endpoints--------#
+
+- Lors de la création d’un endpoint, il est important de penser à son accès, car il retourne 
+peut-être des informations confidentielles ou permet des actions qui ne doivent pas être permises à tout le monde.
+
+- Les permissions permettent la mise en place de règles de contrôle strictes. 
+Avoir une permission par « acteur » (clients, partenaires, utilisateurs, 
+administrateurs, etc.) de notre API est un bon moyen de gérer qui peut accéder à quels endpoints.
+
+En résumé:
+
+-Les permissions permettent de limiter l’accès aux endpoints.
+-DRF fournit certaines permissions, mais il est possible de créer les nôtres.
+-Disposer une permission par acteur permet de facilement savoir sur quels endpoints les permissions doivent être placées.
+-Lors de la mise en place d’un nouvel endpoint, il est important de savoir qui va l’utiliser, 
+ pour déterminer s’il doit rester public ou doit posséder certaines permissions.
