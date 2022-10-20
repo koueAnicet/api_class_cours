@@ -181,3 +181,46 @@ En résumé:
       mais il en existe d’autres également conseillées par DRF.
     @ Deux nouveaux endpoints d’obtention et de rafraîchissement de tokens fournis par Simple JWT  
       permettent de gérer l’authentification de nos utilisateurs.
+
+
+
+#--------------Donnez des accès avec les tokens--------#
+
+- Le token d’accès a une durée de vie limitée dans le temps ; si nous décodons son payload en utilisant par exemple jwt.io :
+
+    {
+        "token_type": "access",
+        "exp": 1628927720,
+        "jti": "63e4e6dab0494aee803fed93f24a80c1",
+        "user_id": 1
+    }
+
+- nous pouvons voir différentes informations :
+
+    @ token_type :  indique le type de token ;
+    @ exp :  est un timestamp indiquant jusqu’à quand ce token peut être utilisé ;
+    @ jti :  signifie JWT ID, c’est un identifiant unique créé lors de la génération du token ;
+    @ user_id :  est l’identifiant Django de l’utilisateur, il est ajouté par Simple JWT lors de la génération du token.
+
+
+- la durée de vie des tokens peut être configurée dans les settings de Django.
+
+    SIMPLE_JWT = {
+        'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+        'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    }
+- Rafraîchissez des tokens
+    Lorsque le token d’accès n’est plus valide, il est nécessaire d’en créer un autre. 
+    C’est à cela que sert le token de rafraîchissement.
+
+    Il faut pour cela réaliser un appel en POST sur l’endpoint de rafraîchissement de tokens. 
+    Le token de rafraîchissement doit être transmis dans le corps de la requête sous l’attribut refresh, 
+    et un nouveau token d’accès est alors retourné par le serveur.
+    
+En résumé:
+
+    -  Les tokens JWT sont un moyen d’assurer l’authentification des utilisateurs.
+    - Les tokens d’accès et de rafraîchissement sont à conserver précieusement par les applications 
+      clientes pendant la session des utilisateurs.
+    - Deux endpoints différents permettent d’une part l’obtention de tokens, 
+      et d’autre part le rafraîchissement du token d’accès.    
