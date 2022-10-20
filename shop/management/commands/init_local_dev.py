@@ -105,6 +105,7 @@ ADMIN_ID = 'admin-oc'
 ADMIN_PASSWORD = 'password-oc'
 
 
+
 class Command(BaseCommand):
 
     help = 'Initialize project for local development'
@@ -126,5 +127,6 @@ class Command(BaseCommand):
                                             price=data_article['price'])
 
         UserModel.objects.create_superuser(ADMIN_ID, 'admin@oc.drf', ADMIN_PASSWORD)
+        
 
         self.stdout.write(self.style.SUCCESS("All Done !"))
