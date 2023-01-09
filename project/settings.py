@@ -134,6 +134,7 @@ REST_FRAMEWORK={
     'PAGE_SIZE': 5,
     'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework_simplejwt.authentication.JWTAuthentication',)
 }
+## Durée de du tokens
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),

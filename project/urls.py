@@ -19,6 +19,7 @@ router.register('admin/category', AdminCategoryViewset, basename='admin-category
 router.register('admin/article', AdminArticleViewset, basename='admin-article')
 router.register('admin/product', AdminProductViewset, basename='admin-product')
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
